@@ -1,5 +1,6 @@
 (ns ^{:doc "Core API for the Brute Entity Component System"}
-    brute.core)
+    brute.core
+    )
 
 (def ^{:private true} all-entities (ref []))
 (def ^{:private true} entity-components (ref {}))
@@ -49,3 +50,14 @@
     (if-let [entities (keys (get @entity-components type))]
         entities
         []))
+
+(defn remove-component!
+    "Remove a component instance from an entity"
+    [entity instance]
+    (let [type (get-component-type instance)]
+        (dosync (alter entity-components assoc type (dissoc (get @entity-components type) entity)))))
+
+;; TODO: kill-entity
+;; TODO: get-all-components-on-entity
+;; TODO: process-one-game-tick
+;; TODO: register-system

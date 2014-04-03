@@ -49,3 +49,31 @@
           (add-component! entity1 pos)
           (add-component! entity2 pos)
           (get-all-entities-with-component Position) => (just #{entity1, entity2})))
+
+(fact "Are able to removing an entity's component"
+      (let [entity (create-entity!)
+            pos (->Position 5 5)
+            vel (->Velocity 10 10)]
+          (add-component! entity pos)
+          (add-component! entity vel)
+
+          (get-component entity Position) => truthy
+          (get-component entity Velocity) => truthy
+          (get-all-entities-with-component Position) => [entity]
+          (get-all-entities-with-component Velocity) => [entity]
+
+          (remove-component! entity pos)
+
+          (get-component entity Position) => nil
+          (get-component entity Velocity) => truthy
+          (get-all-entities-with-component Position) => []
+          (get-all-entities-with-component Velocity) => [entity]
+
+          (remove-component! entity vel)
+
+          (get-component entity Position) => nil
+          (get-component entity Velocity) => nil
+          (get-all-entities-with-component Position) => []
+          (get-all-entities-with-component Velocity) => []
+          )
+      )
