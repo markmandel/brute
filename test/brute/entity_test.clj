@@ -1,7 +1,7 @@
-(ns brute.core-test
+(ns brute.entity_test
     (:import (java.util UUID))
     (:use [midje.sweet]
-          [brute.core]))
+          [brute.entity]))
 
 (defn- setup!
     "Provides setup for the tests. Has side effects"
@@ -105,15 +105,3 @@
 
           (kill-entity! entity)
           (get-all-components-on-entity entity) => []))
-
-(fact "You can add system functions, and then call them per game tick"
-      (let [counter (atom 0)
-            sys-fn (fn [delta] (swap! counter inc))]
-          (process-one-game-tick 10)
-          @counter => 0
-          (add-system-fn sys-fn)
-          (process-one-game-tick 10)
-          @counter => 1
-          (add-system-fn sys-fn)
-          (process-one-game-tick 10)
-          @counter => 3))

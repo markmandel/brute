@@ -6,7 +6,7 @@
           [clojure.repl]
           [clojure.tools.namespace.repl :only (refresh refresh-all set-refresh-dirs)]
           [clojure.tools.trace])
-    (:require [brute.core :as core]))
+    (:require [brute.entity :as em]))
 
 ;; system init functions
 
@@ -23,7 +23,7 @@
 (defn go
     "Initializes and starts the system running."
     []
-    (core/reset-all!)
+    (em/reset-all!)
     :ready)
 
 (defn reset
