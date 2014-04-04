@@ -4,19 +4,23 @@
 
 (def ^{:private true} all-entities (ref []))
 (def ^{:private true} entity-components (ref {}))
+(def ^{:private true} entity-component-types (ref {}))
 
 (defn reset-all!
     "Resets the state of this entity component system. Good for tests"
     []
     (alter-var-root #'all-entities (constantly (ref [])))
-    (alter-var-root #'entity-components (constantly (ref {}))))
+    (alter-var-root #'entity-components (constantly (ref {})))
+    (alter-var-root #'entity-component-types (constantly (ref {}))))
+
 
 (defn create-entity!
     "Creates an entity and stores it"
     []
     (let [entity (java.util.UUID/randomUUID)]
         (dosync
-            (alter all-entities conj entity))
+            (alter all-entities conj entity)
+            (alter entity-component-types assoc entity #{}))
         entity))
 
 (defn get-all-entities
@@ -37,7 +41,9 @@
     "Add a component instance to a given entity"
     [entity instance]
     (dosync
-        (alter entity-components assoc-in [(get-component-type instance) entity] instance)))
+        (let [type (get-component-type instance)]
+            (alter entity-components assoc-in [type entity] instance)
+            (alter entity-component-types assoc entity (conj (get @entity-component-types entity) type)))))
 
 (defn get-component
     "Get the component data for a specific component type"
@@ -55,7 +61,11 @@
     "Remove a component instance from an entity"
     [entity instance]
     (let [type (get-component-type instance)]
-        (dosync (alter entity-components assoc type (dissoc (get @entity-components type) entity)))))
+        (dosync
+            (alter entity-components assoc type (dissoc (get @entity-components type) entity))
+            (alter entity-component-types assoc entity (disj (get @entity-component-types entity) type)))))
+
+
 
 ;; TODO: kill-entity
 ;; TODO: get-all-components-on-entity
