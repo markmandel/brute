@@ -2,14 +2,17 @@
     brute.core
     )
 
-(def ^{:private true} all-entities (ref []))
+;; Set of all entities that are in the app
+(def ^{:private true} all-entities (ref #{}))
+;; Map of Component Types -> Entity -> Component Instance
 (def ^{:private true} entity-components (ref {}))
+;; Map of Entities -> Seq of Component Types
 (def ^{:private true} entity-component-types (ref {}))
 
 (defn reset-all!
     "Resets the state of this entity component system. Good for tests"
     []
-    (alter-var-root #'all-entities (constantly (ref [])))
+    (alter-var-root #'all-entities (constantly (ref #{})))
     (alter-var-root #'entity-components (constantly (ref {})))
     (alter-var-root #'entity-component-types (constantly (ref {}))))
 
@@ -65,9 +68,16 @@
             (alter entity-components assoc type (dissoc (get @entity-components type) entity))
             (alter entity-component-types assoc entity (disj (get @entity-component-types entity) type)))))
 
+(defn kill-entity!
+    "Destroy an entity completely."
+    [entity]
+    (dosync
+        (let [component-types (get @entity-component-types entity)]
+            (alter all-entities disj entity)
+            (alter entity-component-types dissoc entity)
+            (doseq [type component-types]
+                (alter entity-components assoc type (dissoc (get @entity-components type) entity))))))
 
-
-;; TODO: kill-entity
 ;; TODO: get-all-components-on-entity
 ;; TODO: process-one-game-tick
 ;; TODO: register-system

@@ -21,8 +21,8 @@
           (create-entity!) =not=> uuid))
 
 (fact "Creating an entity results in it being added to the global list"
-      (let [uuid (create-entity!)]
-          [uuid] => (get-all-entities)))
+      (let [entity (create-entity!)]
+          (get-all-entities) => #{entity}))
 
 (fact "By default, a component returns it's class as it's type"
       (let [pos (->Position 5 5)]
@@ -74,6 +74,18 @@
           (get-component entity Position) => nil
           (get-component entity Velocity) => nil
           (get-all-entities-with-component Position) => []
-          (get-all-entities-with-component Velocity) => []
-          )
-      )
+          (get-all-entities-with-component Velocity) => []))
+
+(fact "You can kill an entity, and it goes bye bye"
+      (let [entity (create-entity!)
+            pos (->Position 5 5)
+            vel (->Velocity 10 10)]
+          (add-component! entity pos)
+          (add-component! entity vel)
+          (get-all-entities) => #{entity}
+
+          (kill-entity! entity)
+
+          (get-all-entities) => #{}
+          (get-component entity Position) => nil
+          (get-component entity Velocity) => nil))
