@@ -1,4 +1,4 @@
-(ns ^{:doc "Core API for the Brute Entity Component System"}
+(ns ^{:doc "Entity Manager API for the Brute Entity Component System"}
     brute.core
     )
 
@@ -10,7 +10,7 @@
 (def ^{:private true} entity-component-types (ref {}))
 
 ;; seq of functions that relate to systems
-(def system-fns (atom []))
+(def ^{:private true} system-fns (atom []))
 
 (defn reset-all!
     "Resets the state of this entity component system. Good for tests"
@@ -89,7 +89,8 @@
 
 (defn add-system-fn
     "Add a function that represents a system, e.g. Physics, Rendering, etc.
-    This needs to be in the structure: (fn [delta]) where 'delta' is the number of milliseconds since the last game tick"
+    This needs to be in the structure: (fn [delta]) where 'delta' is the number of milliseconds since the last game tick.
+    This will then be called directly when `process-one-game-tick` is called"
     [system-fn]
     (swap! system-fns conj system-fn))
 
