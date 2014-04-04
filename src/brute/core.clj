@@ -9,12 +9,16 @@
 ;; Map of Entities -> Seq of Component Types
 (def ^{:private true} entity-component-types (ref {}))
 
+;; seq of functions that relate to systems
+(def system-fns (atom []))
+
 (defn reset-all!
     "Resets the state of this entity component system. Good for tests"
     []
     (alter-var-root #'all-entities (constantly (ref #{})))
     (alter-var-root #'entity-components (constantly (ref {})))
-    (alter-var-root #'entity-component-types (constantly (ref {}))))
+    (alter-var-root #'entity-component-types (constantly (ref {})))
+    (alter-var-root #'system-fns (constantly (atom []))))
 
 
 (defn create-entity!
@@ -78,6 +82,22 @@
             (doseq [type component-types]
                 (alter entity-components assoc type (dissoc (get @entity-components type) entity))))))
 
-;; TODO: get-all-components-on-entity
-;; TODO: process-one-game-tick
-;; TODO: register-system
+(defn get-all-components-on-entity
+    "Get all the components on a specific entity. Useful for debugging"
+    [entity]
+    (map #(get-in @entity-components [% entity]) (get @entity-component-types entity)))
+
+(defn add-system-fn
+    "Add a function that represents a system, e.g. Physics, Rendering, etc.
+    This needs to be in the structure: (fn [delta]) where 'delta' is the number of milliseconds since the last game tick"
+    [system-fn]
+    (swap! system-fns conj system-fn))
+
+(defn process-one-game-tick
+    "Optional convenience function that calls each of the system functions that have been added in turn, with the provided delta."
+    [delta]
+    (doseq [system-fn @system-fns]
+        (apply system-fn [delta])))
+
+;; TODO: Test multimethod extension
+;; Possible TODO: be able to register a system-fn with a throttle (i.e. only fire every 10 ms)

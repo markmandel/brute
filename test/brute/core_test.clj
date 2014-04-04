@@ -89,3 +89,31 @@
           (get-all-entities) => #{}
           (get-component entity Position) => nil
           (get-component entity Velocity) => nil))
+
+(fact "You can get all the components on a single entity, if you so choose"
+      (let [entity (create-entity!)
+            pos (->Position 5 5)
+            vel (->Velocity 10 10)]
+
+          (get-all-components-on-entity entity) => []
+
+          (add-component! entity pos)
+          (get-all-components-on-entity entity) => (just #{pos})
+
+          (add-component! entity vel)
+          (get-all-components-on-entity entity) => (just #{pos vel})
+
+          (kill-entity! entity)
+          (get-all-components-on-entity entity) => []))
+
+(fact "You can add system functions, and then call them per game tick"
+      (let [counter (atom 0)
+            sys-fn (fn [delta] (swap! counter inc))]
+          (process-one-game-tick 10)
+          @counter => 0
+          (add-system-fn sys-fn)
+          (process-one-game-tick 10)
+          @counter => 1
+          (add-system-fn sys-fn)
+          (process-one-game-tick 10)
+          @counter => 3))
