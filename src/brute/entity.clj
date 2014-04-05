@@ -81,5 +81,3 @@
     "Get all the components on a specific entity. Useful for debugging"
     [entity]
     (map #(get-in @entity-components [% entity]) (get @entity-component-types entity)))
-
-;; TODO: Test multimethod extension

@@ -1,5 +1,6 @@
 (ns brute.entity_test
-    (:import (java.util UUID))
+    (:import (java.util UUID)
+             (clojure.lang PersistentArrayMap))
     (:use [midje.sweet]
           [brute.entity]))
 
@@ -12,6 +13,10 @@
 
 (defrecord Position [x y])
 (defrecord Velocity [x y])
+
+(defmethod get-component-type PersistentArrayMap
+           [component]
+    (:type component))
 
 (fact "The Entity I create is a unique uuid"
       (let [uuid (create-entity!)]
@@ -28,11 +33,21 @@
       (let [pos (->Position 5 5)]
           (get-component-type pos) => (class pos)))
 
+(fact "We can extend the component type system, through the multimethod"
+      (let [pos {:type :position :x 5 :y 5}]
+          (get-component-type pos) => :position))
+
 (fact "You can add a component instance to an entity, and then retrieve it again"
       (let [entity (create-entity!)
             pos (->Position 5 5)]
           (add-component! entity pos)
           (get-component entity Position) => pos))
+
+(fact "You can add an extended component instance to an entity, and then retrieve it again"
+      (let [entity (create-entity!)
+            pos {:type :position :x 5 :y 5}]
+          (add-component! entity pos)
+          (get-component entity :position) => pos))
 
 (fact "If an entity doesn't have a component, it should return nil"
       (let [entity (create-entity!)
@@ -49,6 +64,15 @@
           (add-component! entity1 pos)
           (add-component! entity2 pos)
           (get-all-entities-with-component Position) => (just #{entity1, entity2})))
+
+(fact "Can retrieve all entites that have a single extended type"
+      (get-all-entities-with-component :position) => []
+      (let [entity1 (create-entity!)
+            entity2 (create-entity!)
+            pos {:type :position :x 5 :y 5}]
+          (add-component! entity1 pos)
+          (add-component! entity2 pos)
+          (get-all-entities-with-component :position) => (just #{entity1, entity2})))
 
 (fact "Are able to removing an entity's component"
       (let [entity (create-entity!)
@@ -105,3 +129,4 @@
 
           (kill-entity! entity)
           (get-all-components-on-entity entity) => []))
+
