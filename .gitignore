@@ -2,3 +2,6 @@
 !.gitignore
 .idea
 *.iml
+pom.xml*
+target
+
