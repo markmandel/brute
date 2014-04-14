@@ -2,7 +2,7 @@
 
 A simple and lightweight Entity Component System library for writing games with Clojure.
 
-![Clojars Version](https://clojars.org/brute/latest-version.svg)
+![Clojars Version](https://clojars.org/brute/latest-version.svg?v=1)
 
 The aim of this project was to use basic Clojure building blocks to form an Entity System architecture, and get out of the
 author's way when deciding exactly what approach would best fit their game when integrating with this library.
