@@ -7,9 +7,11 @@ A simple and lightweight Entity Component System library for writing games with 
 The aim of this project was to use basic Clojure building blocks to form an Entity System architecture, and get out of the
 author's way when deciding exactly what approach would best fit their game when integrating with this library.
 
+To that end:
+
 - Entities are UUIDs.
-- The Component type system can be easily extended through a multimethod `get-component-type`.
-- Components can therefore be defrecords, deftypes, maps or really anything you choose, really.
+- The Component type system can be easily extended through a multimethod `get-component-type`, but defaults to using the component's instance class as its type.
+- Components can therefore be defrecords or deftypes by default, but could easily be maps or just about anything else.
 - Systems are simply references to functions of the format `(fn [delta])`.
 
 To learn more about Entity Component Systems, please read the [Entity Systems Wiki](http://entity-systems.wikidot.com/).
