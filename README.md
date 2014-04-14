@@ -22,9 +22,9 @@ See the [Library API](https://markmandel.github.io/brute/codox/) for all the fun
 
 ### Quick Start
 
-A quick example based overview of what fucntionality Brute provides.
+A quick example based overview of what functionality Brute provides.
 
-I've used fully qualified names, *brute.entity* and *brute.system* to be explicit about what is part of Brute in the demo code
+I've used fully qualified namespace, *brute.entity* and *brute.system* to be explicit about what is part of Brute in the demo code
 below, and what denotes custom code.
 
 #### Creating a Ball entity, with corresponding components.
@@ -78,11 +78,11 @@ Adds each system function to a list, in the order that they are added
 (defn- create-systems
     "register all the system functions"
     []
-    (brute.system/add-system-fn scoring/process-one-game-tick)
-    (brute.system/add-system-fn input/process-one-game-tick)
-    (brute.system/add-system-fn ai/process-one-game-tick)
-    (brute.system/add-system-fn physics/process-one-game-tick)
-    (brute.system/add-system-fn rendering/process-one-game-tick))
+    (brute.system/add-system-fn! scoring/process-one-game-tick)
+    (brute.system/add-system-fn! input/process-one-game-tick)
+    (brute.system/add-system-fn! ai/process-one-game-tick)
+    (brute.system/add-system-fn! physics/process-one-game-tick)
+    (brute.system/add-system-fn! rendering/process-one-game-tick))
 
 ```
 

@@ -17,11 +17,9 @@
             sys-fn (fn [delta] (swap! counter inc))]
           (process-one-game-tick 10)
           @counter => 0
-          (add-system-fn sys-fn)
+          (add-system-fn! sys-fn)
           (process-one-game-tick 10)
           @counter => 1
-          (add-system-fn sys-fn)
+          (add-system-fn! sys-fn)
           (process-one-game-tick 10)
           @counter => 3))
-
-;; TODO: be able to register a system-fn with a throttle (i.e. only fire every 10 ms)

@@ -9,7 +9,7 @@
     []
     (alter-var-root #'system-fns (constantly (atom []))))
 
-(defn add-system-fn
+(defn add-system-fn!
     "Add a function that represents a system, e.g. Physics, Rendering, etc.
     This needs to be in the structure: (fn [delta]) where 'delta' is the number of milliseconds since the last game tick.
     This will then be called directly when `process-one-game-tick` is called"

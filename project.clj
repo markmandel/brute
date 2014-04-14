@@ -1,4 +1,4 @@
-(defproject brute "0.1.0"
+(defproject brute "0.1.1"
     :description "A simple and lightweight Entity Component System library for writing games with Clojure"
     :url "http://www.github.com/markmandel/brute"
     :license {:name "Eclipse Public License"
