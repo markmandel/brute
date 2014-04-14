@@ -40,7 +40,7 @@
     (class component))
 
 (defn add-component!
-    "Add a component instance to a given entity"
+    "Add a component instance to a given entity. Will overwrite a component if already set."
     [entity instance]
     (dosync
         (let [type (get-component-type instance)]

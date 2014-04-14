@@ -43,6 +43,15 @@
           (add-component! entity pos)
           (get-component entity Position) => pos))
 
+(fact "You can add a component instance to an entity, and then overwrite it with another component of the same type"
+      (let [entity (create-entity!)
+            pos (->Position 5 5)
+            pos2 (->Position 10 10)]
+          (add-component! entity pos)
+          (get-component entity Position) => pos
+          (add-component! entity pos2)
+          (get-component entity Position) => pos2))
+
 (fact "You can add an extended component instance to an entity, and then retrieve it again"
       (let [entity (create-entity!)
             pos {:type :position :x 5 :y 5}]
