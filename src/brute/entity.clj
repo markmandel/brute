@@ -1,34 +1,44 @@
 (ns ^{:doc "Entity Manager functions for the Brute Entity Component System"}
     brute.entity)
 
-;; Set of all entities that are in the app
-(def ^{:private true} all-entities (ref #{}))
-;; Map of Component Types -> Entity -> Component Instance
-(def ^{:private true} entity-components (ref {}))
-;; Map of Entities -> Seq of Component Types
-(def ^{:private true} entity-component-types (ref {}))
-
-(defn reset-all!
-    "Resets the state of this entity component system. Good for tests"
+(defn create-system
+    "Creates the system data structure that will need to be passed to all entity functions"
     []
-    (alter-var-root #'all-entities (constantly (ref #{})))
-    (alter-var-root #'entity-components (constantly (ref {})))
-    (alter-var-root #'entity-component-types (constantly (ref {}))))
+    ;; Set of all entities that are in the app
+    {:all-entities           #{}
+     ;; Map of Component Types -> Entity -> Component Instance
+     :entity-components      {}
+     ;; Map of Entities -> Set of Component Types
+     :entity-component-types {}})
 
+(defn create-entity
+    "Create the entity and return it. Entities are just UUIDs"
+    (java.util.UUID/randomUUID))
 
+(defn get-all-entities
+    "Returns all the entities. Not that useful in application, but good for debugging/testing"
+    [system]
+    (:all-entities system))
+
+(defn store-entity
+    "Store the entity in the Entity System"
+    [system entity]
+    (let [system (transient system)]
+        (->
+            system
+            (assoc! :all-entities (conj! (get-all-entities) entity))
+            (assoc! :entity-component-types (assoc! (:entity-component-types system) entity #{}))
+            persistent!)))
+
+#_
 (defn create-entity!
-    "Creates an entity and stores it"
+    "Creates an entity and returns it. An entity is just an UUID"
     []
-    (let [entity (java.util.UUID/randomUUID)]
+    (let (java.util.UUID/randomUUID)
         (dosync
             (alter all-entities conj entity)
             (alter entity-component-types assoc entity #{}))
         entity))
-
-(defn get-all-entities
-    "Returns all the entities. Not that useful in application, but good for debugging/testing"
-    []
-    @all-entities)
 
 (defmulti get-component-type
           "Returns the type for a given component. Using a multimethod with 'class' as the dispatch-fn to allow for extensibility per application.
