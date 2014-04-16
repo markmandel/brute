@@ -20,10 +20,21 @@
     []
     (set-refresh-dirs "./src" "./dev" "./test"))
 
+(def system
+    "A Var containing an object representing the application under
+      development."
+    nil)
+
+(defn create
+    "Creates and initializes the system under development in the Var
+      #'system."
+    []
+    (alter-var-root #'system (constantly (em/create-system))))
+
 (defn go
     "Initializes and starts the system running."
     []
-    (em/reset-all!)
+    (create)
     :ready)
 
 (defn reset

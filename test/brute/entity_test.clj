@@ -2,12 +2,17 @@
     (:import (java.util UUID)
              (clojure.lang PersistentArrayMap))
     (:use [midje.sweet]
-          [brute.entity]))
+          [brute.entity]
+          [clojure.pprint :only [pprint]]))
+
+(def system (atom 0))
 
 (defn- setup!
     "Provides setup for the tests. Has side effects"
     []
-    (reset-all!))
+    (reset! system (create-system)))
+
+(defn- r! [s] (reset! system s))
 
 (namespace-state-changes (before :facts (setup!)))
 
@@ -19,15 +24,17 @@
     (:type component))
 
 (fact "The Entity I create is a unique uuid"
-      (let [uuid (create-entity!)]
+      (let [uuid (create-entity)]
           uuid => truthy
           (> (-> uuid .toString .length) 0) => true
           (class uuid) => UUID
-          (create-entity!) =not=> uuid))
+          (create-entity) =not=> uuid))
 
-(fact "Creating an entity results in it being added to the global list"
-      (let [entity (create-entity!)]
-          (get-all-entities) => #{entity}))
+(fact "Creating and adding an entity results in it being added to the global list"
+      (let [entity (create-entity)]
+          (-> @system
+              (add-entity entity)
+              (get-all-entities)) => #{entity}))
 
 (fact "By default, a component returns it's class as it's type"
       (let [pos (->Position 5 5)]
@@ -38,83 +45,103 @@
           (get-component-type pos) => :position))
 
 (fact "You can add a component instance to an entity, and then retrieve it again"
-      (let [entity (create-entity!)
+      (let [entity (create-entity)
             pos (->Position 5 5)]
-          (add-component! entity pos)
-          (get-component entity Position) => pos))
+          (-> @system
+              (add-entity entity)
+              (add-component entity pos)
+              (get-component entity Position)) => pos))
 
 (fact "You can add a component instance to an entity, and then overwrite it with another component of the same type"
-      (let [entity (create-entity!)
+      (let [entity (create-entity)
             pos (->Position 5 5)
             pos2 (->Position 10 10)]
-          (add-component! entity pos)
-          (get-component entity Position) => pos
-          (add-component! entity pos2)
-          (get-component entity Position) => pos2))
+          (-> @system
+              (add-entity entity)
+              (add-component entity pos)
+              r!
+              (get-component entity Position)) => pos
+          (-> @system
+              (add-component entity pos2)
+              (get-component entity Position)) => pos2))
 
 (fact "You can add an extended component instance to an entity, and then retrieve it again"
-      (let [entity (create-entity!)
+      (let [entity (create-entity)
             pos {:type :position :x 5 :y 5}]
-          (add-component! entity pos)
-          (get-component entity :position) => pos))
+          (-> @system
+              (add-entity entity)
+              (add-component entity pos)
+              (get-component entity :position)) => pos))
 
 (fact "If an entity doesn't have a component, it should return nil"
-      (let [entity (create-entity!)
+      (let [entity (create-entity)
             pos (->Position 5 5)]
-          (get-component entity Position) => falsey
-          (add-component! entity pos)
-          (get-component entity Velocity) => falsey))
+          (-> @system
+              (add-entity entity)
+              (get-component entity Position)) => falsey
+          (-> @system
+              (add-component entity pos)
+              (get-component entity Velocity)) => falsey))
 
 (fact "Can retrieve all entites that have a single type"
-      (get-all-entities-with-component Position) => []
-      (let [entity1 (create-entity!)
-            entity2 (create-entity!)
+      (get-all-entities-with-component @system Position) => []
+      (let [entity1 (create-entity)
+            entity2 (create-entity)
             pos (->Position 5 5)]
-          (add-component! entity1 pos)
-          (add-component! entity2 pos)
-          (get-all-entities-with-component Position) => (just #{entity1, entity2})))
+          (-> @system
+              (add-entity entity1)
+              (add-entity entity2)
+              (add-component entity1 pos)
+              (add-component entity2 pos)
+              (get-all-entities-with-component Position)) => (just #{entity1, entity2})))
 
 (fact "Can retrieve all entites that have a single extended type"
-      (get-all-entities-with-component :position) => []
-      (let [entity1 (create-entity!)
-            entity2 (create-entity!)
+      (get-all-entities-with-component @system :position) => []
+      (let [entity1 (create-entity)
+            entity2 (create-entity)
             pos {:type :position :x 5 :y 5}]
-          (add-component! entity1 pos)
-          (add-component! entity2 pos)
-          (get-all-entities-with-component :position) => (just #{entity1, entity2})))
+          (-> @system
+              (add-entity entity1)
+              (add-entity entity2)
+              (add-component entity1 pos)
+              (add-component entity2 pos)
+              (get-all-entities-with-component :position)) => (just #{entity1, entity2})))
 
 (fact "Are able to removing an entity's component"
-      (let [entity (create-entity!)
+      (let [entity (create-entity)
             pos (->Position 5 5)
             vel (->Velocity 10 10)]
-          (add-component! entity pos)
-          (add-component! entity vel)
+          (-> @system
+              (add-entity entity)
+              (add-component entity pos)
+              (add-component entity vel)
+              r!)
 
-          (get-component entity Position) => truthy
-          (get-component entity Velocity) => truthy
-          (get-all-entities-with-component Position) => [entity]
-          (get-all-entities-with-component Velocity) => [entity]
+          (get-component @system entity Position) => truthy
+          (get-component @system entity Velocity) => truthy
+          (get-all-entities-with-component @system Position) => [entity]
+          (get-all-entities-with-component @system Velocity) => [entity]
 
-          (remove-component! entity pos)
+          (-> @system (remove-component entity pos) r!)
 
-          (get-component entity Position) => nil
-          (get-component entity Velocity) => truthy
-          (get-all-entities-with-component Position) => []
-          (get-all-entities-with-component Velocity) => [entity]
+          (get-component @system entity Position) => nil
+          (get-component @system entity Velocity) => truthy
+          (get-all-entities-with-component @system Position) => []
+          (get-all-entities-with-component @system Velocity) => [entity]
 
-          (remove-component! entity vel)
+          (-> @system (remove-component entity vel) r!)
 
-          (get-component entity Position) => nil
-          (get-component entity Velocity) => nil
-          (get-all-entities-with-component Position) => []
-          (get-all-entities-with-component Velocity) => []))
+          (get-component @system entity Position) => nil
+          (get-component @system entity Velocity) => nil
+          (get-all-entities-with-component @system Position) => []
+          (get-all-entities-with-component @system Velocity) => []))
 
-(fact "You can kill an entity, and it goes bye bye"
-      (let [entity (create-entity!)
+#_ (fact "You can kill an entity, and it goes bye bye"
+      (let [entity (create-entity)
             pos (->Position 5 5)
             vel (->Velocity 10 10)]
-          (add-component! entity pos)
-          (add-component! entity vel)
+          (add-component entity pos)
+          (add-component entity vel)
           (get-all-entities) => #{entity}
 
           (kill-entity! entity)
@@ -123,17 +150,17 @@
           (get-component entity Position) => nil
           (get-component entity Velocity) => nil))
 
-(fact "You can get all the components on a single entity, if you so choose"
-      (let [entity (create-entity!)
+#_ (fact "You can get all the components on a single entity, if you so choose"
+      (let [entity (create-entity)
             pos (->Position 5 5)
             vel (->Velocity 10 10)]
 
           (get-all-components-on-entity entity) => []
 
-          (add-component! entity pos)
+          (add-component entity pos)
           (get-all-components-on-entity entity) => (just #{pos})
 
-          (add-component! entity vel)
+          (add-component entity vel)
           (get-all-components-on-entity entity) => (just #{pos vel})
 
           (kill-entity! entity)

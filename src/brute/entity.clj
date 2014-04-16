@@ -26,8 +26,8 @@
     [system entity]
     (let [system (transient system)]
         (-> system
-            (assoc! :all-entities (conj! (get-all-entities system) entity))
-            (assoc! :entity-component-types (-> system :entity-component-types assoc! entity #{}))
+            (assoc! :all-entities (conj (get-all-entities system) entity))
+            (assoc! :entity-component-types (-> system :entity-component-types (assoc entity #{})))
             persistent!)))
 
 #_
@@ -55,11 +55,12 @@
     [system entity instance]
     (let [type (get-component-type instance)
           system (transient system)
-          entity-components (:entity-components system)]
+          ecs (:entity-components system)
+          ects (:entity-component-types system)]
         (-> system
-            (assoc! :entity-components (assoc! entity-components type (-> entity-components (get type) (assoc! entity instance))))
-            (assoc! :entity-component-types (-> system :entity-component-types (get entity) (conj! type) (assoc! entity))))
-        persistent!))
+            (assoc! :entity-components (assoc-in ecs [type entity] instance))
+            (assoc! :entity-component-types (assoc ects entity (-> ects (get entity) (conj type))))
+            persistent!)))
 
 #_
 (defn add-component!
@@ -96,8 +97,8 @@
           entity-components (:entity-components system)
           entity-component-types (:entity-component-types system)]
         (-> system
-            (assoc! :entity-components (assoc! entity-components type (-> entity-components (get type) (dissoc! entity))))
-            (assoc! :entity-component-types (assoc! entity-component-types entity (-> entity-component-types (get entity) (disj! type))))
+            (assoc! :entity-components (assoc entity-components type (-> entity-components (get type) (dissoc entity))))
+            (assoc! :entity-component-types (assoc entity-component-types entity (-> entity-component-types (get entity) (disj type))))
             persistent!)))
 
 #_
