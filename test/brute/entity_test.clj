@@ -136,33 +136,42 @@
           (get-all-entities-with-component @system Position) => []
           (get-all-entities-with-component @system Velocity) => []))
 
-#_ (fact "You can kill an entity, and it goes bye bye"
-      (let [entity (create-entity)
-            pos (->Position 5 5)
-            vel (->Velocity 10 10)]
-          (add-component entity pos)
-          (add-component entity vel)
-          (get-all-entities) => #{entity}
-
-          (kill-entity! entity)
-
-          (get-all-entities) => #{}
-          (get-component entity Position) => nil
-          (get-component entity Velocity) => nil))
-
-#_ (fact "You can get all the components on a single entity, if you so choose"
+(fact "You can kill an entity, and it goes bye bye"
       (let [entity (create-entity)
             pos (->Position 5 5)
             vel (->Velocity 10 10)]
 
-          (get-all-components-on-entity entity) => []
+          (-> @system
+              (add-entity entity)
+              (add-component entity pos)
+              (add-component entity vel)
+              r!
+              (get-all-entities)) => #{entity}
 
-          (add-component entity pos)
-          (get-all-components-on-entity entity) => (just #{pos})
+          (-> @system
+              (kill-entity entity)
+              r!)
 
-          (add-component entity vel)
-          (get-all-components-on-entity entity) => (just #{pos vel})
+          (get-all-entities @system) => #{}
+          (get-component @system entity Position) => nil
+          (get-component @system entity Velocity) => nil))
 
-          (kill-entity! entity)
-          (get-all-components-on-entity entity) => []))
-
+(fact "You can get all the components on a single entity, if you so choose"
+      (let [entity (create-entity)
+            pos (->Position 5 5)
+            vel (->Velocity 10 10)]
+          (-> @system
+              (add-entity entity)
+              r!
+              (get-all-components-on-entity entity)) => []
+          (-> @system
+              (add-component entity pos)
+              r!
+              (get-all-components-on-entity entity)) => (just #{pos})
+          (-> @system
+              (add-component entity vel)
+              r!
+              (get-all-components-on-entity entity)) => (just #{pos vel})
+          (-> @system
+              (kill-entity entity)
+              (get-all-components-on-entity entity)) => []))

@@ -121,13 +121,11 @@
     (let [system (transient system)
           entity-component-types (:entity-component-types system)]
         (-> system
-            (assoc! :all-entities (disj! (get-all-entities system)))
-            (assoc! :entity-component-types (dissoc! entity-component-types entity))
-            (assoc! :entity-components (reduce (fn [v type] (assoc! v type (dissoc! (get v type) entity)))
-                                               (:entity-components system) (get entity-component-types entity)))
-            persistent!)
-        )
-    )
+            (assoc! :all-entities (disj (get-all-entities system) entity))
+            (assoc! :entity-component-types (dissoc entity-component-types entity))
+            (assoc! :entity-components (persistent! (reduce (fn [v type] (assoc! v type (dissoc (get v type) entity)))
+                                                            (transient (:entity-components system)) (get entity-component-types entity))))
+            persistent!)))
 
 #_
 (defn kill-entity!
