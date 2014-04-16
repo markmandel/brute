@@ -13,6 +13,7 @@
 
 (defn create-entity
     "Create the entity and return it. Entities are just UUIDs"
+    []
     (java.util.UUID/randomUUID))
 
 (defn get-all-entities
@@ -20,14 +21,13 @@
     [system]
     (:all-entities system))
 
-(defn store-entity
-    "Store the entity in the Entity System"
+(defn add-entity
+    "Add the entity in the Entity System"
     [system entity]
     (let [system (transient system)]
-        (->
-            system
-            (assoc! :all-entities (conj! (get-all-entities) entity))
-            (assoc! :entity-component-types (assoc! (:entity-component-types system) entity #{}))
+        (-> system
+            (assoc! :all-entities (conj! (get-all-entities system) entity))
+            (assoc! :entity-component-types (-> system :entity-component-types assoc! entity #{}))
             persistent!)))
 
 #_
@@ -49,6 +49,19 @@
            [component]
     (class component))
 
+
+(defn add-component
+    "Add a component instance to a given entity. Will overwrite a component if already set."
+    [system entity instance]
+    (let [type (get-component-type instance)
+          system (transient system)
+          entity-components (:entity-components system)]
+        (-> system
+            (assoc! :entity-components (assoc! entity-components type (-> entity-components (get type) (assoc! entity instance))))
+            (assoc! :entity-component-types (-> system :entity-component-types (get entity) (conj! type) (assoc! entity))))
+        persistent!))
+
+#_
 (defn add-component!
     "Add a component instance to a given entity. Will overwrite a component if already set."
     [entity instance]
@@ -59,16 +72,35 @@
 
 (defn get-component
     "Get the component data for a specific component type"
+    [system entity type]
+    (-> system :entity-components (get-in [type entity])))
+
+#_
+(defn get-component
+    "Get the component data for a specific component type"
     [entity type]
     (get-in @entity-components [type entity]))
 
 (defn get-all-entities-with-component
     "Get all the entities that have a given component type"
-    [type]
-    (if-let [entities (keys (get @entity-components type))]
+    [system type]
+    (if-let [entities (-> system :entity-components (get type) keys)]
         entities
         []))
 
+(defn remove-component
+    "Remove a component instance from an entity"
+    [system entity instance]
+    (let [type (get-component-type instance)
+          system (transient system)
+          entity-components (:entity-components system)
+          entity-component-types (:entity-component-types system)]
+        (-> system
+            (assoc! :entity-components (assoc! entity-components type (-> entity-components (get type) (dissoc! entity))))
+            (assoc! :entity-component-types (assoc! entity-component-types entity (-> entity-component-types (get entity) (disj! type))))
+            persistent!)))
+
+#_
 (defn remove-component!
     "Remove a component instance from an entity"
     [entity instance]
@@ -77,6 +109,26 @@
             (alter entity-components assoc type (dissoc (get @entity-components type) entity))
             (alter entity-component-types assoc entity (disj (get @entity-component-types entity) type)))))
 
+#_
+(reduce (fn [v e]
+            (assoc v e (dissoc (get v e) :e)))
+        m k)
+
+(defn kill-entity
+    "Destroy an entity completely."
+    [system entity]
+    (let [system (transient system)
+          entity-component-types (:entity-component-types system)]
+        (-> system
+            (assoc! :all-entities (disj! (get-all-entities system)))
+            (assoc! :entity-component-types (dissoc! entity-component-types entity))
+            (assoc! :entity-components (reduce (fn [v type] (assoc! v type (dissoc! (get v type) entity)))
+                                               (:entity-components system) (get entity-component-types entity)))
+            persistent!)
+        )
+    )
+
+#_
 (defn kill-entity!
     "Destroy an entity completely."
     [entity]
@@ -89,5 +141,5 @@
 
 (defn get-all-components-on-entity
     "Get all the components on a specific entity. Useful for debugging"
-    [entity]
-    (map #(get-in @entity-components [% entity]) (get @entity-component-types entity)))
+    [system entity]
+    (map #(get-in (:entity-components system) [% entity]) (get (:entity-component-types system) entity)))
