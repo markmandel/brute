@@ -19,17 +19,13 @@
 
 (fact "You can add system functions, and then call them per game tick"
       (let [counter (atom 0)
-            sys-fn (fn [delta] (swap! counter inc))]
+            sys-fn (fn [_ _] (swap! counter inc))]
           (process-one-game-tick @system 10)
           @counter => 0
-
-          (println @system)
 
           (-> @system
               (add-system-fn sys-fn)
               r!)
-
-          (println @system)
 
           (process-one-game-tick @system 10)
           @counter => 1

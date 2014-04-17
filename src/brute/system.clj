@@ -12,4 +12,4 @@
     "Optional convenience function that calls each of the system functions that have been added in turn, with the provided delta."
     [system delta]
     (doseq [system-fn (:system-fns system)]
-        (apply system-fn [delta])))
+        (apply system-fn [system delta])))
