@@ -1,11 +1,16 @@
 (ns brute.system-test
     (:use [midje.sweet]
+          [brute.entity]
           [brute.system]))
+
+(def system (atom 0))
 
 (defn- setup!
     "Provides setup for the tests. Has side effects"
     []
-    (reset-all!))
+    (reset! system (create-system)))
+
+(defn- r! [s] (reset! system s))
 
 (namespace-state-changes (before :facts (setup!)))
 
@@ -15,11 +20,23 @@
 (fact "You can add system functions, and then call them per game tick"
       (let [counter (atom 0)
             sys-fn (fn [delta] (swap! counter inc))]
-          (process-one-game-tick 10)
+          (process-one-game-tick @system 10)
           @counter => 0
-          (add-system-fn! sys-fn)
-          (process-one-game-tick 10)
+
+          (println @system)
+
+          (-> @system
+              (add-system-fn sys-fn)
+              r!)
+
+          (println @system)
+
+          (process-one-game-tick @system 10)
           @counter => 1
-          (add-system-fn! sys-fn)
-          (process-one-game-tick 10)
+
+          (-> @system
+              (add-system-fn sys-fn)
+              r!)
+
+          (process-one-game-tick @system 10)
           @counter => 3))
