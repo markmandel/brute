@@ -36,3 +36,12 @@
 
           (process-one-game-tick @system 10)
           @counter => 3))
+
+(fact "Each system function will pass through the system ES data structure" :focus
+      (let [sys-fn (fn [system _] system)
+            e (create-entity)]
+          (-> @system
+              (add-system-fn sys-fn)
+              (add-entity e)
+              (process-one-game-tick 0)
+              (get-all-entities)) => #{e}))
