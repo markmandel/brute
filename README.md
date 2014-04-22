@@ -16,6 +16,10 @@ To learn more about Entity Component Systems, please read the [Entity Systems Wi
 I personally, also found [Adam Martin's Blog Post series](http://t-machine.org/index.php/2007/09/03/entity-systems-are-the-future-of-mmog-development-part-1/)
 very useful at giving a step by step explanation of Entity System architecture.
 
+## News
+
+Blog posts and news can be found on the [Compound Theory Blog](http://www.compoundtheory.com/category/brute)
+
 ## Usage
 
 See the [Library API](https://markmandel.github.io/brute/codox/) for all the functionality of this library.
@@ -24,10 +28,37 @@ See the [Library API](https://markmandel.github.io/brute/codox/) for all the fun
 
 A quick example based overview of what functionality Brute provides.
 
-I've used fully qualified namespace, *brute.entity* and *brute.system* to be explicit about what is part of Brute in the demo code
-below, and what denotes custom code.
+I've used fully qualified namespace, *brute.entity* and *brute.system* to be explicit about what is part of Brute in the demo code below, and what denotes custom code.
 
-#### Creating a Ball entity, with corresponding components.
+#### Creating the Basic Entity Component System
+
+Brute doesn't store any data in a ref/atom, but instead provides you with the functions and capabilities for manipulating an immutable data structure that represents this ES system.  This is particularly useful because:
+
+- How the entity data structure is persisted is up to you and the library you are using (although 9/10 times I expect it will end up stored in a single atom, and `reset!` on each game loop).
+- This gives you complete control over when state mutation occurs - if it occurs at all. Which makes concurrent processes much simpler to develop.
+- You get direct access to the ES data structure, in case you want to do something with it that isn't exposed in the current API.
+- You can easily have multiple ES systems within a single game (sub-games).
+- Saving a game becomes simple: Just serialise the ES data structure and store. Deserialise to load.
+- Basically all the good stuff having immutable data structures and pure functions should give you.
+
+To create the initial system data structure:
+
+```clojure
+(brute.entity/create-system)
+```
+
+This is actually a map, that lets you access Entities and their Components from a variety of ways, so you can always do it in a performant way.
+
+```clojure
+    {;; Nested Map of Component Types -> Entity -> Component Instance
+        :entity-components      {}
+     ;; Map of Entities -> Set of Component Types
+        :entity-component-types {}}
+```
+
+Do note, that this data structure may be subject to change between releases.
+
+#### Creating a Ball Entity, with corresponding Component instances.
 
 - A `Ball` component instance to know it is a Ball.
 - A `Rectangle` component instance to draw a rectangle in its' place
@@ -36,19 +67,19 @@ below, and what denotes custom code.
 ```clojure
 (defn create-ball
     "Creates a ball entity"
-    []
-    (let [ball (brute.entity/create-entity!) ;;create the ball entity
+    [system]
+    (let [ball (brute.entity/create-entity) ;; Returns a UUID for the Entity
           center-x (-> (graphics! :get-width) (/ 2) (m/round))
-          center-y (-> (graphics! :get-width) (/ 2) (m/round))
+          center-y (-> (graphics! :get-height) (/ 2) (m/round))
           ball-size 20
           ball-center-x (- center-x (/ ball-size 2))
           ball-center-y (- center-y (/ ball-size 2))
           angle (create-random-angle)]
-
-        (brute.entity/add-component! ball (c/->Ball)) ;; Add Ball Component Instance
-        (brute.entity/add-component! ball (c/->Rectangle (rectangle ball-center-x ball-center-y ball-size ball-size) (color :white))) ;; Add Rectangle Component Instance
-        (brute.entity/add-component! ball (c/->Velocity (vector-2 0 300 :set-angle angle))) ;; Add Velocity instance
-        ))
+        (-> system
+            (brute.entity/add-entity ball) ;; Adds the entity to the ES data structure and returns it
+            (brute.entity/add-component ball (c/->Ball)) ;; Adds the Ball instance to the ES data structure and returns it
+            (brute.entity/add-component ball (c/->Rectangle (rectangle ball-center-x ball-center-y ball-size ball-size) (color :white))) ;; Adds the Rectangle instance to the ES data structure and returns it
+            (brute.entity/add-component ball (c/->Velocity (vector-2 0 300 :set-angle angle)))))) ;; Adds the Velocity instance to the ES data structure and returns it
 ```
 
 #### Render each of the Entities that have a Rectangle Component
@@ -56,43 +87,43 @@ below, and what denotes custom code.
 ```clojure
 (defn- render-rectangles
     "Render all the rectangles"
-    []
-    (.begin shape-renderer ShapeRenderer$ShapeType/Filled)
-    (doseq [entity (brute.entity/get-all-entities-with-component Rectangle)] ;; loop around all the entities that have a Rectangle Component instance
-        (let [rect (brute.entity/get-component entity Rectangle) ;; get the Rectangle Component Instance for this entity
-              colour (:colour rect) ;; Rectangle component contains the colour
-              geom (:rect rect)] ;; Rectangle component also contains a Rectangle geometry shape.
-            (doto shape-renderer ;; draw the actual rectangle on the screen
-                (.setColor (:colour rect))
-                (.rect (rectangle! geom :get-x)
-                       (rectangle! geom :get-y)
-                       (rectangle! geom :get-width)
-                       (rectangle! geom :get-height)))))
-    (.end shape-renderer))
+    [system]
+    (let [shape-renderer (:shape-renderer (:renderer system))]
+        (.begin shape-renderer ShapeRenderer$ShapeType/Filled)
+        (doseq [entity (brute.entity/get-all-entities-with-component system Rectangle)] ;; loop around all the entities that have a Rectangle Component instance
+            (let [rect (brute.entity/get-component system entity Rectangle) ;; get the Rectangle Component Instance for this entity
+                  geom (:rect rect)] ;; Rectangle component contains a Rectangle geometry shape.
+                (doto shape-renderer ;; Draw the actual rectangle on the screen
+                    (.setColor (:colour rect)) ;; Rectangle component contains the colour
+                    (.rect (rectangle! geom :get-x)
+                           (rectangle! geom :get-y)
+                           (rectangle! geom :get-width)
+                           (rectangle! geom :get-height)))))
+        (.end shape-renderer)))
 ```
 
 #### Systems Management
-Adds each system function to a list, in the order that they are added
+System management is an optional feature for you to use with Brute.
+
+The following adds each system function to a list contains on the Entity System data structure, maintaining the order in which they were added.
 
 ```clojure
 (defn- create-systems
     "register all the system functions"
-    []
-    (brute.system/add-system-fn! scoring/process-one-game-tick)
-    (brute.system/add-system-fn! input/process-one-game-tick)
-    (brute.system/add-system-fn! ai/process-one-game-tick)
-    (brute.system/add-system-fn! physics/process-one-game-tick)
-    (brute.system/add-system-fn! rendering/process-one-game-tick))
+    [system]
+    (brute.system/add-system-fn system scoring/process-one-game-tick)
+    (brute.system/add-system-fn system input/process-one-game-tick)
+    (brute.system/add-system-fn system ai/process-one-game-tick)
+    (brute.system/add-system-fn system physics/process-one-game-tick)
+    (brute.system/add-system-fn system rendering/process-one-game-tick))
 
 ```
 
-Finally call each function in order added, simple write:
+Finally call each function in the order added, simply write:
 
 ```clojure
-(brute.system/process-one-game-tick (graphics! :get-delta-time))
+(brute.system/process-one-game-tick system (graphics! :get-delta-time))
 ```
-
-
 
 ## Game Examples
 

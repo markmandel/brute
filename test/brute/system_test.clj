@@ -44,4 +44,4 @@
               (add-system-fn sys-fn)
               (add-entity e)
               (process-one-game-tick 0)
-              (get-all-entities)) => #{e}))
+              (get-all-entities)) => [e]))

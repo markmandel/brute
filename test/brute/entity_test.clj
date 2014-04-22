@@ -34,7 +34,7 @@
       (let [entity (create-entity)]
           (-> @system
               (add-entity entity)
-              (get-all-entities)) => #{entity}))
+              (get-all-entities)) => [entity]))
 
 (fact "By default, a component returns it's class as it's type"
       (let [pos (->Position 5 5)]
@@ -146,13 +146,13 @@
               (add-component entity pos)
               (add-component entity vel)
               r!
-              (get-all-entities)) => #{entity}
+              (get-all-entities)) => [entity]
 
           (-> @system
               (kill-entity entity)
               r!)
 
-          (get-all-entities @system) => #{}
+          (get-all-entities @system) => []
           (get-component @system entity Position) => nil
           (get-component @system entity Velocity) => nil))
 

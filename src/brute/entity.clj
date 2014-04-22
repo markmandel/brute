@@ -4,12 +4,10 @@
 (defn create-system
     "Creates the system data structure that will need to be passed to all entity functions"
     []
-    ;; Set of all entities that are in the app
-    {:all-entities           #{}
-     ;; Map of Component Types -> Entity -> Component Instance
-     :entity-components      {}
+    {;; Nested Map of Component Types -> Entity -> Component Instance
+        :entity-components      {}
      ;; Map of Entities -> Set of Component Types
-     :entity-component-types {}})
+        :entity-component-types {}})
 
 (defn create-entity
     "Create the entity and return it. Entities are just UUIDs"
@@ -17,16 +15,17 @@
     (java.util.UUID/randomUUID))
 
 (defn get-all-entities
-    "Returns all the entities. Not that useful in application, but good for debugging/testing"
+    "Returns a list of all the entities. Not that useful in application, but good for debugging/testing"
     [system]
-    (:all-entities system))
+    (if-let [result (-> system :entity-component-types keys)]
+        result
+        []))
 
 (defn add-entity
-    "Add the entity in the Entity System"
+    "Add the entity to the ES Data Structure and returns it"
     [system entity]
     (let [system (transient system)]
         (-> system
-            (assoc! :all-entities (conj (get-all-entities system) entity))
             (assoc! :entity-component-types (-> system :entity-component-types (assoc entity #{})))
             persistent!)))
 
@@ -41,7 +40,8 @@
 
 
 (defn add-component
-    "Add a component instance to a given entity. Will overwrite a component if already set."
+    "Add a component instance to a given entity in the ES data structure and returns it.
+    Will overwrite a component if already set."
     [system entity instance]
     (let [type (get-component-type instance)
           system (transient system)
@@ -65,7 +65,7 @@
         []))
 
 (defn remove-component
-    "Remove a component instance from an entity"
+    "Remove a component instance from the ES data structure and returns it"
     [system entity instance]
     (let [type (get-component-type instance)
           system (transient system)
@@ -77,12 +77,11 @@
             persistent!)))
 
 (defn kill-entity
-    "Destroy an entity completely."
+    "Destroy an entity completely from the ES data structure and returns it"
     [system entity]
     (let [system (transient system)
           entity-component-types (:entity-component-types system)]
         (-> system
-            (assoc! :all-entities (disj (get-all-entities system) entity))
             (assoc! :entity-component-types (dissoc entity-component-types entity))
             (assoc! :entity-components (persistent! (reduce (fn [v type] (assoc! v type (dissoc (get v type) entity)))
                                                             (transient (:entity-components system)) (get entity-component-types entity))))
