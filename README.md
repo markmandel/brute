@@ -111,12 +111,12 @@ The following adds each system function to a list contains on the Entity System 
 (defn- create-systems
     "register all the system functions"
     [system]
-    (brute.system/add-system-fn system scoring/process-one-game-tick)
-    (brute.system/add-system-fn system input/process-one-game-tick)
-    (brute.system/add-system-fn system ai/process-one-game-tick)
-    (brute.system/add-system-fn system physics/process-one-game-tick)
-    (brute.system/add-system-fn system rendering/process-one-game-tick))
-
+    (-> system
+    	(brute.system/add-system-fn input/process-one-game-tick)
+    	(brute.system/add-system-fn scoring/process-one-game-tick)
+    	(brute.system/add-system-fn ai/process-one-game-tick)
+    	(brute.system/add-system-fn physics/process-one-game-tick)
+    	(brute.system/add-system-fn rendering/process-one-game-tick)))
 ```
 
 Finally call each function in the order added, simply write:
