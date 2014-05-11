@@ -8,7 +8,7 @@ The aim of this project was to use basic Clojure building blocks to form an Enti
 author's way when deciding exactly what approach would best fit their game when integrating with this library.
 
 - Entities are UUIDs.
-- The Component type system can be easily extended through a multimethod `get-component-type`.
+- The Component type system can be easily extended through a multimethod `get-component-type` (this defaults to using `class` for the component type).
 - Components can therefore be defrecords, deftypes, maps or really anything you choose, really.
 - Systems are simply references to functions of the format `(fn [delta])`.
 
@@ -34,10 +34,9 @@ I've used fully qualified namespace, *brute.entity* and *brute.system* to be exp
 
 Brute doesn't store any data in a ref/atom, but instead provides you with the functions and capabilities for manipulating an immutable data structure that represents this ES system.  This is particularly useful because:
 
-- How the entity data structure is persisted is up to you and the library you are using (although 9/10 times I expect it will end up stored in a single atom, and `reset!` on each game loop).
-- This gives you complete control over when state mutation occurs - if it occurs at all. Which makes concurrent processes much simpler to develop.
-- You get direct access to the ES data structure, in case you want to do something with it that isn't exposed in the current API.
-- You can easily have multiple ES systems within a single game (sub-games).
+- How the entity data structure is persisted is up to you and the library you are using (although 9/10 times I expect it will end up stored in a single atom, and reset! on each game loop), which gives you complete control over when state mutation occurs – if it occurs at all. This makes concurrent processes much simpler to develop.
+- You get direct access to the ES data structure, in case you want to do something with it that isn’t exposed in the current API.
+- You can easily have multiple ES systems within a single game, e.g. for sub-games.
 - Saving a game becomes simple: Just serialise the ES data structure and store. Deserialise to load.
 - Basically all the good stuff having immutable data structures and pure functions should give you.
 
