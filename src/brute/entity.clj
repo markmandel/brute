@@ -91,3 +91,8 @@
     "Get all the components on a specific entity. Useful for debugging"
     [system entity]
     (map #(get-in (:entity-components system) [% entity]) (get (:entity-component-types system) entity)))
+
+(defn update-component [system entity type fn & args]
+  (let [component (e/get-component system entity type)]
+    (e/add-component system entity (apply fn component args))))
+
