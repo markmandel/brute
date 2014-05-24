@@ -1,9 +1,10 @@
-(defproject brute "0.2.0"
+(defproject brute "0.2.1-SNAPSHOT"
     :description "A simple and lightweight Entity Component System library for writing games with Clojure"
     :url "http://www.github.com/markmandel/brute"
     :license {:name "Eclipse Public License"
               :url  "http://www.eclipse.org/legal/epl-v10.html"}
-    :dependencies [[org.clojure/clojure "1.6.0"]]
+    :dependencies [[org.clojure/clojure "1.6.0"]
+                   [org.clojure/math.numeric-tower "0.0.4"]]
     :plugins [[lein-midje "3.1.1"]
               [lein-ancient "0.5.5"]
               [codox "0.6.7"]]
