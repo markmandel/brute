@@ -37,7 +37,7 @@
           (process-one-game-tick @system 10)
           @counter => 3))
 
-(fact "Each system function will pass through the system ES data structure" :focus
+(fact "Each system function will pass through the system ES data structure"
       (let [sys-fn (fn [system _] system)
             e (create-entity)]
           (-> @system
@@ -71,5 +71,19 @@
           @counter => 1
 
           (process-one-game-tick @system 35)
-          @counter => 3
-          ))
+          @counter => 3))
+
+(fact "Each throttled function will pass through the system ES data structure" :focus
+      (let [counter (atom 0)
+            throttle-limit (atom 0)
+            threshold (/ 1000 60)
+            sys-fn (fn [es _] (swap! counter inc) es)
+            e (create-entity)]
+
+          (-> @system
+              (add-throttled-system-fn sys-fn throttle-limit threshold)
+              (add-entity e)
+              (process-one-game-tick 30)
+              r!)
+          @counter => 1
+          (get-all-entities @system) => [e]))

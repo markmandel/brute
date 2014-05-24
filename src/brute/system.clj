@@ -17,9 +17,10 @@
     [system-fn atom threshhold system delta]
     (swap! atom + delta)
     (if (>= @atom threshhold)
-        (dotimes [_ (m/floor (/ @atom threshhold))]         ;; this takes care of when the framerate
-            (swap! atom - threshhold)                       ;; is WAY slower than the throttle.
-            (system-fn system delta))
+        (reduce (fn [v _]                                   ;; this takes care of when the framerate
+                    (swap! atom - threshhold)               ;; is WAY slower than the throttle.
+                    (system-fn v delta))
+                system (-> @atom (/ threshhold) m/floor range))
         system))
 
 (defn add-throttled-system-fn
