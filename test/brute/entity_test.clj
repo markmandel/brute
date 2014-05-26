@@ -175,3 +175,19 @@
           (-> @system
               (kill-entity entity)
               (get-all-components-on-entity entity)) => []))
+
+(fact "You can update a component by applying a function and parameters to it, like update-in does"
+      (let [entity (create-entity)
+            pos (->Position 5 5)]
+        (-> @system
+            (add-entity entity)
+            (add-component entity pos)
+            r!)
+        (:x (get-component @system entity Position)) => 5
+        (-> @system
+            (update-component entity Position assoc :x 10)
+            r!)
+        (:x (get-component @system entity Position)) => 10
+        (-> @system
+            (kill-entity entity)
+            r!)))
