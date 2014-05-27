@@ -59,10 +59,11 @@
 
 (defn update-component
     "Update an entity's component instance through through fn. Function is applied first with the specified component and any other args applied,
-    and should return the modified component instance."
+    and should return the modified component instance. Return nil if you want no change to occur."
     [system entity type fn & args]
-    (let [component (get-component system entity type)]
-        (add-component system entity (apply fn component args))))
+    (if-let [update (apply fn (get-component system entity type) args)]
+        (add-component system entity update)
+        system))
 
 (defn get-all-entities-with-component
     "Get all the entities that have a given component type"
