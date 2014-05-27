@@ -57,6 +57,13 @@
     [system entity type]
     (-> system :entity-components (get-in [type entity])))
 
+(defn update-component
+    "Update an entity's component instance through through fn. Function is applied first with the specified component and any other args applied,
+    and should return the modified component instance."
+    [system entity type fn & args]
+    (let [component (get-component system entity type)]
+        (add-component system entity (apply fn component args))))
+
 (defn get-all-entities-with-component
     "Get all the entities that have a given component type"
     [system type]
@@ -91,8 +98,3 @@
     "Get all the components on a specific entity. Useful for debugging"
     [system entity]
     (map #(get-in (:entity-components system) [% entity]) (get (:entity-component-types system) entity)))
-
-(defn update-component [system entity type fn & args]
-  (let [component (get-component system entity type)]
-    (add-component system entity (apply fn component args))))
-
