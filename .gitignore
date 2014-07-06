@@ -9,3 +9,4 @@ pom.xml.asc
 !.gitignore
 *.iml
 /doc/codox
+/node_modules
