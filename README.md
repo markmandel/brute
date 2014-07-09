@@ -1,6 +1,6 @@
 # Brute
 
-A simple and lightweight Entity Component System library for writing games with Clojure.
+A simple and lightweight Entity Component System library for writing games with Clojure or ClojureScript.
 
 ![Clojars Version](https://clojars.org/brute/latest-version.svg?v=2)
 
@@ -131,6 +131,37 @@ Finally call each function in the order added, simply write:
 ## Game Examples
 
 - [Pong Clone](https://github.com/markmandel/brute-play-pong) written with [play-clj](https://github.com/oakes/play-clj)
+
+## Contributing
+
+Pull requests are always welcome!
+
+### CLJX
+This project uses [CLJX](https://github.com/lynaghk/cljx) to cross compile to Clojure and ClojureScript.  For that reason, you will want to run `lein cljx` before starting up a REPL, otherwise the REPL won't be able to find the user.clj dependencies.
+
+If you want to use [Midje autotest](https://github.com/marick/Midje/wiki/Autotest), you will want to run `lein cljx auto` to automatically generate the Clojure files so that Midje can see the changes.
+
+### ClojureScript
+
+To run the tests under ClojureScript you will need the following Node pages installed:
+
+```bash
+npm install -g karma karma-cli karma-jasmine jasmine-node karma-chrome-launcher
+```
+
+To run the CLJS tests in isolation you can run:
+
+```bash
+lein cljsbuil test karma
+```
+
+### Clean Test
+
+To do a clean end to end test of both the Clojure and ClojureScript code:
+
+```bash
+lein cleantest
+```
 
 ## License
 
