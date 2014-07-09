@@ -1,7 +1,19 @@
 (ns brute.system-test
-    (:use [midje.sweet]
-          [brute.entity]
-          [brute.system]))
+    (:require #+clj [midje.sweet :refer :all]
+              #+cljs [purnam.test] 
+              [brute.entity :refer #+clj :all
+               ;;         v--- wish cljs knew what to do with :refer :all 
+               #+cljs [create-entity
+                       create-system
+                       add-entity
+                       get-all-entities]]
+              [brute.system :refer #+clj :all
+               #+cljs [add-system-fn
+                       add-throttled-system-fn
+                       process-one-game-tick]])
+    #+cljs (:require-macros [purnam.test :refer [fact]]))
+
+#+cljs (declare =>)
 
 (def system (atom 0))
 
@@ -12,7 +24,8 @@
 
 (defn- r! [s] (reset! system s))
 
-(namespace-state-changes (before :facts (setup!)))
+#+clj (namespace-state-changes (before :facts (setup!)))
+#+cljs (setup!)
 
 (defrecord Position [x y])
 (defrecord Velocity [x y])
