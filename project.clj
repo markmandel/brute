@@ -43,7 +43,8 @@
                                          :compiler     {:output-to     "target/test.js"
                                                         :optimizations :whitespace
                                                         :pretty-print  true}}]}
-            :aliases {"cljx"      ["with-profile" "cljx" "cljx"] ;; https://github.com/lynaghk/cljx/issues/31
+            :aliases {"doc"       ["do" "cljx," "doc"]
+                      "cljx"      ["with-profile" "cljx" "cljx"] ;; https://github.com/lynaghk/cljx/issues/31
                       "cleantest" ["do" "clean,"
                                    "cljx,"                  ;; have to do this twice, as without the generated clj, the user namespace can't load.
                                    "midje,"                 ;; cljx hook runs before midje
@@ -54,5 +55,5 @@
                                              [org.clojars.gjahad/debug-repl "0.3.3"]]
                               :source-paths ["dev" "target/generated/src/clj"]
                               :repl-options {:init-ns user}
-                              :codox        {:output-dir "doc/codox"}}
+                              :codox        {:output-dir "doc/codox" :sources ["target/generated/src/clj"]}}
                        :cljx {}})
