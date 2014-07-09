@@ -51,8 +51,7 @@
                                     [org.clojure/tools.namespace "0.2.4"]
                                     [org.clojure/tools.trace "0.7.8"]
                                     [org.clojars.gjahad/debug-repl "0.3.3"]]
-                     ;; disabled, sorry. makes cljx crash due to classpath
-                     ;;                                     -- janiczek
-                     ;;:source-paths ["dev"]
-                     ;;:repl-options {:init-ns user}
+                     :source-paths ["dev"
+                                    "target/generated/src/clj"]
+                     :repl-options {:init-ns user}
                      :codox        {:output-dir "doc/codox"}}})
