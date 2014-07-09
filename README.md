@@ -136,6 +136,8 @@ Finally call each function in the order added, simply write:
 
 Pull requests are always welcome!
 
+Active development happens on the `develop` branch. The `master` branch is the source for the current release.
+
 ### CLJX
 This project uses [CLJX](https://github.com/lynaghk/cljx) to cross compile to Clojure and ClojureScript.  For that reason, you will want to run `lein cljx` before starting up a REPL, otherwise the REPL won't be able to find the user.clj dependencies.
 
