@@ -24,10 +24,9 @@
         system))
 
 (defn add-throttled-system-fn
-    "Same as `add-system-fn`, but will only execute the function after `threshold` milliseconds has been equalled or passed. This time
-    that has been passed is stored in the `atom` that is passed in, which should have an initial value of 0 (and will be changed on each function call)."
-    [system system-fn atom threshold]
-    (add-system-fn system (partial throttled-fn system-fn atom threshold)))
+    "Same as `add-system-fn`, but will only execute the `system-fn` after `threshold` milliseconds has been equalled or passed."
+    [system system-fn threshold]
+    (add-system-fn system (partial throttled-fn system-fn (atom 0) threshold)))
 
 (defn process-one-game-tick
     "Optional convenience function that calls each of the system functions that have been added in turn, with the provided delta."

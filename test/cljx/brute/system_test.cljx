@@ -59,14 +59,13 @@
               (process-one-game-tick 0)
               (get-all-entities)) => [e]))
 
-(fact "Calling a throttled function will only fire on every throttling call"
+(fact "Calling a throttled function will only fire on every throttling call" :focus
       (let [counter (atom 0)
-            throttle-limit (atom 0)
             threshold (/ 1000 60)
             sys-fn (fn [_ _] (swap! counter inc))]
 
           (-> @system
-              (add-throttled-system-fn sys-fn throttle-limit threshold)
+              (add-throttled-system-fn sys-fn threshold)
               r!)
 
           (process-one-game-tick @system 0)
@@ -78,23 +77,20 @@
           (process-one-game-tick @system 7)
           @counter => 1
 
-          (> @throttle-limit 0) => true
-
           (process-one-game-tick @system 0)
           @counter => 1
 
           (process-one-game-tick @system 35)
           @counter => 3))
 
-(fact "Each throttled function will pass through the system ES data structure" :focus
+(fact "Each throttled function will pass through the system ES data structure"
       (let [counter (atom 0)
-            throttle-limit (atom 0)
             threshold (/ 1000 60)
             sys-fn (fn [es _] (swap! counter inc) es)
             e (create-entity)]
 
           (-> @system
-              (add-throttled-system-fn sys-fn throttle-limit threshold)
+              (add-throttled-system-fn sys-fn threshold)
               (add-entity e)
               (process-one-game-tick 30)
               r!)
