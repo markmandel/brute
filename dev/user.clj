@@ -13,12 +13,15 @@
 (defn set-refresh-src!
     "Just set source as the refresh dirs"
     []
-    (set-refresh-dirs "./src" "./dev"))
+    (set-refresh-dirs "./target/generated/src/clj"
+                      "./dev"))
 
 (defn set-refresh-all!
     "Set src, dev and test as the directories"
     []
-    (set-refresh-dirs "./src" "./dev" "./test"))
+    (set-refresh-dirs "./target/generated/src/clj"
+                      "./dev"
+                      "./target/generated/test/clj"))
 
 (def system
     "A Var containing an object representing the application under
