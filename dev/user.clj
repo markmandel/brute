@@ -9,17 +9,6 @@
     (:require [brute.entity :as em]))
 
 ;; system init functions
-
-(defn set-refresh-src!
-    "Just set source as the refresh dirs"
-    []
-    (set-refresh-dirs "./src" "./dev"))
-
-(defn set-refresh-all!
-    "Set src, dev and test as the directories"
-    []
-    (set-refresh-dirs "./src" "./dev" "./test"))
-
 (def system
     "A Var containing an object representing the application under
       development."

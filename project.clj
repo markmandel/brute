@@ -53,7 +53,8 @@
                                              [org.clojure/tools.namespace "0.2.4"]
                                              [org.clojure/tools.trace "0.7.8"]
                                              [org.clojars.gjahad/debug-repl "0.3.3"]]
-                              :source-paths ["dev" "target/generated/src/clj"]
+                              :source-paths ["dev" "src/cljx"]
+                              :test-paths   ["test/cljx"]
                               :repl-options {:init-ns user}
                               :codox        {:output-dir "doc/codox" :sources ["target/generated/src/clj"]}}
                        :cljx {}})
