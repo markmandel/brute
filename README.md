@@ -154,7 +154,7 @@ npm install -g karma karma-cli karma-jasmine jasmine-node karma-chrome-launcher
 To run the CLJS tests in isolation you can run:
 
 ```bash
-lein cljsbuil test karma
+lein cljsbuild test karma
 ```
 
 ### Clean Test

@@ -2,5 +2,8 @@ box: vgeshel/clojure@0.0.2
 build:
   steps:
     - script:
+        name: Install NPM Requirements
+        code: sudo npm install -g karma karma-cli karma-jasmine jasmine-node karma-chrome-launcher
+    - script:
         name: lein cleantest
         code: lein cleantest
