@@ -148,7 +148,7 @@ If you want to use [Midje autotest](https://github.com/marick/Midje/wiki/Autotes
 To run the tests under ClojureScript you will need the following Node pages installed:
 
 ```bash
-npm install -g karma karma-cli karma-jasmine jasmine-node karma-chrome-launcher
+npm install -g karma karma-cli karma-jasmine jasmine-node
 ```
 
 To run the CLJS tests in isolation you can run:

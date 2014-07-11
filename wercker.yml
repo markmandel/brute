@@ -1,12 +1,6 @@
-box: vgeshel/clojure@0.0.2
+box: markmandel/cljx-box@0.0.1
 build:
   steps:
-    - script:
-        name: Install npm
-        code: sudo apt-get install nodejs
-    - script:
-        name: Install NPM Requirements
-        code: sudo npm install -g karma karma-cli karma-jasmine jasmine-node karma-chrome-launcher
     - script:
         name: lein cleantest
         code: lein cleantest
