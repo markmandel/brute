@@ -1,5 +1,6 @@
-box: box: vgeshel/clojure@0.0.2
+box: vgeshel/clojure@0.0.2
 build:
   steps:
-    name: lein cleantest
-    code: lein cleantest
+    - script:
+        name: lein cleantest
+        code: lein cleantest
