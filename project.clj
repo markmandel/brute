@@ -16,6 +16,9 @@
             :source-paths ["target/generated/src/clj"]
             :resource-paths ["target/generated/src/cljs"]
             :test-paths ["target/generated/test/clj"]
+
+            :prep-tasks ["cljx" "javac" "compile"]
+
             :cljx {:builds [{:source-paths ["src/cljx"]
                              :output-path  "target/generated/src/clj"
                              :rules        :clj}
