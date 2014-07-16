@@ -1,8 +1,10 @@
 # Brute
 
-A simple and lightweight Entity Component System library for writing games with Clojure.
+A simple and lightweight Entity Component System library for writing games with Clojure or ClojureScript.
 
 ![Clojars Version](https://clojars.org/brute/latest-version.svg?v=2)
+
+[![wercker status](https://app.wercker.com/status/5f5d692036ee110c41a50ccc7b6f4ae5/m "wercker status")](https://app.wercker.com/project/bykey/5f5d692036ee110c41a50ccc7b6f4ae5)
 
 The aim of this project was to use basic Clojure building blocks to form an Entity System architecture, and get out of the
 author's way when deciding exactly what approach would best fit their game when integrating with this library.
@@ -131,6 +133,39 @@ Finally call each function in the order added, simply write:
 ## Game Examples
 
 - [Pong Clone](https://github.com/markmandel/brute-play-pong) written with [play-clj](https://github.com/oakes/play-clj)
+
+## Contributing
+
+Pull requests are always welcome!
+
+Active development happens on the `develop` branch. The `master` branch is the source for the current release.
+
+### CLJX
+This project uses [CLJX](https://github.com/lynaghk/cljx) to cross compile to Clojure and ClojureScript.  For that reason, you will want to run `lein cljx` before starting up a REPL, otherwise the REPL won't be able to find the user.clj dependencies.
+
+If you want to use [Midje autotest](https://github.com/marick/Midje/wiki/Autotest), you will want to run `lein cljx auto` to automatically generate the Clojure files so that Midje can see the changes.
+
+### ClojureScript
+
+To run the tests under ClojureScript you will need the following Node pages installed:
+
+```bash
+npm install -g karma karma-cli karma-jasmine jasmine-node
+```
+
+To run the CLJS tests in isolation you can run:
+
+```bash
+lein cljsbuild test karma
+```
+
+### Clean Test
+
+To do a clean end to end test of both the Clojure and ClojureScript code:
+
+```bash
+lein cleantest
+```
 
 ## License
 
