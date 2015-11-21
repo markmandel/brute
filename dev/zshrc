@@ -1,0 +1,12 @@
+# Path to your oh-my-zsh configuration.
+ZSH=/oh-my-zsh
+
+# Theme
+ZSH_THEME="lambda"
+
+plugins=(lein debian git git-extras colored-man zsh_reload dirhistory)
+
+source $ZSH/oh-my-zsh.sh
+
+#yes, I suck.
+export EDITOR='nano -w'
