@@ -33,8 +33,7 @@ clean:
 	docker rmi $(TAG)
 
 # Start a development shell
-shell:
-		mkdir -p ~/.m2
+shell: m2
 		docker run --rm \
 				--name=$(NAME) \
 				-P=true \
@@ -51,6 +50,17 @@ shell:
 shell-mount-jvm:
 		mkdir -p /tmp/$(NAME)/jvm
 		sshfs $(USER)@0.0.0.0:/usr/lib/jvm /tmp/$(NAME)/jvm -p $(call getPort,22) -o follow_symlinks
+
+# Run the tests inside the docker container, and output the results.
+test: m2
+	docker run --rm \
+			-v ~/.m2:/root/.m2 \
+			-v $(current_path):/project \
+			$(TAG) lein test
+
+# make sure the maven local dir is there
+m2:
+	mkdir -p ~/.m2
 
 #   _____                 _   _
 #  |  ___|   _ _ __   ___| |_(_) ___  _ __  ___
