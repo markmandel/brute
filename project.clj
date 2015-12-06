@@ -9,20 +9,8 @@
   :plugins [[lein-codox "0.9.0"]
             [lein-cljsbuild "1.1.1"]]
 
-  :cljsbuild {:test-commands {"karma" ["karma" "start"
-                                       "--single-run"]}
-              :builds        [{:id       "dev"
-                               :compiler {:output-to     "target/brute.js"
-                                          :output-dir    "target/js-dev"
-                                          :optimizations :none
-                                          :pretty-print  true
-                                          :source-map    true}}
-                              {:id       "test"
-                               :compiler {:output-to     "target/test.js"
-                                          :optimizations :whitespace
-                                          :pretty-print  true}}]}
-  :aliases {"cleantest" ["do" "clean,"
-                         "cljsbuild" "test" "karma"]}       ;; run karma (will compile all cljs builds before, *sigh*)
+  
+
   :profiles {:dev {:dependencies [[org.clojure/tools.namespace "0.2.10"]]
                    :source-paths ["dev"]
                    :repl-options {:init-ns user}

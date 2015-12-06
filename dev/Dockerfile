@@ -22,6 +22,10 @@ RUN cd /usr/local/bin/ && wget https://raw.githubusercontent.com/technomancy/lei
 
 RUN lein
 
+#Node installation
+RUN curl -sL https://deb.nodesource.com/setup_4.x | bash -
+RUN apt-get install -y nodejs
+
 ADD startup.sh /root/startup.sh
 RUN chmod +x /root/startup.sh
 
