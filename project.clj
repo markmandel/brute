@@ -23,7 +23,8 @@
                                              :optimizations :none
                                              :pretty-print  true
                                              :target :nodejs}}}}
-  :aliases {"alltest" ["do" ["clean"] ["test"] ["doo" "node" "test" "once"]]}
+  :aliases {"alltest" ["do" ["clean"] ["test"] ["doo" "node" "test" "once"]]
+            "cljstest" ["doo" "node" "test"]}
   :profiles {:dev {:dependencies [[org.clojure/tools.namespace "0.2.10"]]
                    :source-paths ["dev"]
                    :repl-options {:init-ns user}

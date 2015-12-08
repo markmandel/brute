@@ -118,12 +118,16 @@
         entity2 (create-entity)
         pos (->Position 5 5)]
 
-    (is (= (-> @system
-               (add-entity entity1)
-               (add-entity entity2)
-               (add-component entity1 pos)
-               (add-component entity2 pos)
-               (get-all-entities-with-component Position)) [entity1, entity2]))))
+
+    (-> @system
+        (add-entity entity1)
+        (add-entity entity2)
+        (add-component entity1 pos)
+        (add-component entity2 pos)
+        r!)
+
+    (is (= (frequencies (get-all-entities-with-component @system Position))
+           (frequencies [entity1, entity2])))))
 
 (deftest add-component-get-all-extended-entities
   (is (= (get-all-entities-with-component @system :position)))
@@ -132,12 +136,15 @@
         entity2 (create-entity)
         pos {:type :position :x 5 :y 5}]
 
-    (is (= (-> @system
-               (add-entity entity1)
-               (add-entity entity2)
-               (add-component entity1 pos)
-               (add-component entity2 pos)
-               (get-all-entities-with-component :position)) [entity1, entity2]))))
+    (-> @system
+        (add-entity entity1)
+        (add-entity entity2)
+        (add-component entity1 pos)
+        (add-component entity2 pos)
+        r!)
+
+    (is (= (frequencies (get-all-entities-with-component @system :position))
+           (frequencies [entity1, entity2])))))
 
 ;; Are able to removing an entity's component
 

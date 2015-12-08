@@ -56,7 +56,7 @@ test: m2
 	docker run --rm \
 			-v ~/.m2:/root/.m2 \
 			-v $(current_path):/project \
-			$(TAG) lein test
+			$(TAG) lein alltest
 
 # make sure the maven local dir is there
 m2:
