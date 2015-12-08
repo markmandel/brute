@@ -7,19 +7,23 @@
                  [org.clojure/clojurescript "1.7.170"]
                  [org.clojure/math.numeric-tower "0.0.4"]]
   :plugins [[lein-codox "0.9.0"]
-            [lein-cljsbuild "1.1.1"]]
+            [lein-cljsbuild "1.1.1"]
+            [lein-doo "0.1.6"]]
   :cljsbuild {:builds {:src  {:source-paths ["src"]
                               :compiler     {:output-to     "target/js/src/brute.js"
                                              :output-dir    "target/js/src"
                                              :source-map    true
                                              :optimizations :none
                                              :pretty-print  true}}
-                       :test {:source-paths ["src" "test"]
+                       :test {:source-paths ["src" "test" "cljs-test"]
                               :compiler     {:output-to     "target/js/test/brute.js"
                                              :output-dir    "target/js/test"
                                              :source-map    true
+                                             :main 'brute.test-runner
                                              :optimizations :none
-                                             :pretty-print  true}}}}
+                                             :pretty-print  true
+                                             :target :nodejs}}}}
+  :aliases {"alltest" ["do" ["clean"] ["test"] ["doo" "node" "test" "once"]]}
   :profiles {:dev {:dependencies [[org.clojure/tools.namespace "0.2.10"]]
                    :source-paths ["dev"]
                    :repl-options {:init-ns user}
