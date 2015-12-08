@@ -11,12 +11,18 @@
   :cljsbuild {:builds
               [{:id           "src"
                 :source-paths ["src"]
-                :compiler     {:output-to     "target/js/brute.js"
-                               :output-dir    "target/js"
+                :compiler     {:output-to     "target/js/src/brute.js"
+                               :output-dir    "target/js/src"
+                               :source-map    true
+                               :optimizations :none
+                               :pretty-print  true}}
+               {:id           "test"
+                :source-paths ["src" "test"]
+                :compiler     {:output-to     "target/js/test/brute.js"
+                               :output-dir    "target/js/test"
                                :source-map    true
                                :optimizations :none
                                :pretty-print  true}}]}
-
   :profiles {:dev {:dependencies [[org.clojure/tools.namespace "0.2.10"]]
                    :source-paths ["dev"]
                    :repl-options {:init-ns user}

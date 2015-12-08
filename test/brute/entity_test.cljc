@@ -3,8 +3,21 @@
   #?(:clj
      (:import (java.util UUID)
               (clojure.lang PersistentArrayMap)))
-  (:require [brute.entity :refer :all]
-            [clojure.test :refer :all]))
+  (:require [brute.entity :refer [create-system
+                                  create-entity
+                                  add-entity
+                                  get-all-entities
+                                  get-component-type
+                                  add-component
+                                  get-component
+                                  update-component
+                                  get-all-entities-with-component
+                                  remove-component
+                                  kill-entity
+                                  get-all-components-on-entity]]
+    #?(:clj
+            [clojure.test :refer :all]
+       :cljs [cljs.test :refer-macros [deftest is use-fixtures]])))
 
 (def system (atom 0))
 (defrecord Position [x y])

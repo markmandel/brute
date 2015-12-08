@@ -1,8 +1,12 @@
 (ns brute.system-test
   "Tests for the system namespace"
-  (:require [brute.entity :refer :all]
-            [brute.system :refer :all]
-            [clojure.test :refer :all]))
+  (:require [brute.entity :refer [create-system get-all-entities add-entity create-entity]]
+            [brute.system :refer [add-system-fn
+                                  add-throttled-system-fn
+                                  process-one-game-tick]]
+    #?(:clj
+            [clojure.test :refer :all]
+       :cljs [cljs.test :refer-macros [deftest is use-fixtures]])))
 
 (def system (atom 0))
 (defrecord Position [x y])
