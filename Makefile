@@ -40,10 +40,13 @@ shell: m2
 				-e HOST_GID=`id -g` \
 				-e HOST_UID=`id -u` \
 				-e HOST_USER=$(USER) \
+				-e DOCKER_GID=$(word 3,$(subst :, ,$(shell getent group docker))) \
 				-v ~/.m2:/home/$(USER)/.m2 \
 				-v $(current_path)/dev/profiles.clj:/home/$(USER)/.lein/profiles.clj \
 				-v $(current_path)/dev/zshrc:/home/$(USER)/.zshrc \
 				-v $(current_path):/project \
+				-v /usr/bin/docker:/usr/bin/docker \
+				-v /var/run/docker.sock:/var/run/docker.sock \
 				-it $(TAG) /root/startup.sh
 
 # mount the docker's jvm in the /tmp dir

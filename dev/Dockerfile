@@ -1,7 +1,11 @@
+#
+# markmandel/brute-dev
+#
+
 FROM java:jdk
 
 RUN apt-get update && \
-    apt-get install -y zsh openssh-server git
+    apt-get install -y zsh openssh-server libapparmor1 git
 
 #sshd setup - https://docs.docker.com/examples/running_ssh_service/
 RUN mkdir /var/run/sshd
@@ -25,6 +29,10 @@ RUN lein
 #Node installation
 RUN curl -sL https://deb.nodesource.com/setup_4.x | bash -
 RUN apt-get install -y nodejs
+
+#wecker tools installation
+RUN curl https://s3.amazonaws.com/downloads.wercker.com/cli/stable/linux_amd64/wercker -o /usr/local/bin/wercker
+RUN chmod +x /usr/local/bin/wercker
 
 ADD startup.sh /root/startup.sh
 RUN chmod +x /root/startup.sh

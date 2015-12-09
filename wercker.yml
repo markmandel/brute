@@ -1,6 +1,6 @@
-box: markmandel/cljx-box@0.0.2
+box: markmandel/brute-dev
 build:
   steps:
     - script:
-        name: lein cleantest
-        code: lein cleantest
+        name: lein alltest
+        code: lein alltest

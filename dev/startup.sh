@@ -13,5 +13,9 @@ cp -r /root/.lein/* /home/$HOST_USER/.lein/
 #make sure all permissions are good to go.
 chown -R $HOST_USER:$HOST_USER /home/$HOST_USER
 
+#allow docker passthrough
+groupadd --gid $DOCKER_GID docker
+usermod -a -G docker $HOST_USER
+
 /usr/sbin/sshd
 su $HOST_USER
