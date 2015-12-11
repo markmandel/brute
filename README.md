@@ -169,7 +169,7 @@ lein cleantest
 
 ## License
 
-Copyright © 2014 Mark Mandel
+Copyright © 2014 Mark Mandel, Google Inc.
 
 Distributed under the Eclipse Public License either version 1.0 or (at
 your option) any later version.
