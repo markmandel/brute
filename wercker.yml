@@ -2,5 +2,5 @@ box: markmandel/brute-dev
 build:
   steps:
     - script:
-        name: lein alltest
+        name: Run all tests
         code: lein alltest

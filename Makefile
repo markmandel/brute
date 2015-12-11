@@ -49,6 +49,9 @@ shell: m2
 				-v /var/run/docker.sock:/var/run/docker.sock \
 				-it $(TAG) /root/startup.sh
 
+shell-attach:
+	docker exec -it --user=$(USER) $(NAME) zsh
+
 # mount the docker's jvm in the /tmp dir
 shell-mount-jvm:
 		mkdir -p /tmp/$(NAME)/jvm
@@ -64,6 +67,20 @@ test: m2
 # make sure the maven local dir is there
 m2:
 	mkdir -p ~/.m2
+
+# push the image up to docker hub
+push:
+	docker push $(TAG)
+
+#   ____  _          _ _   _____                    _
+#  / ___|| |__   ___| | | |_   _|_ _ _ __ __ _  ___| |_ ___
+#  \___ \| '_ \ / _ \ | |   | |/ _` | '__/ _` |/ _ \ __/ __|
+#   ___) | | | |  __/ | |   | | (_| | | | (_| |  __/ |_\__ \
+#  |____/|_| |_|\___|_|_|   |_|\__,_|_|  \__, |\___|\__|___/
+#                                        |___/
+
+wercker-build:
+	wercker --verbose --debug build --docker-local --direct-mount --working-dir /tmp
 
 #   _____                 _   _
 #  |  ___|   _ _ __   ___| |_(_) ___  _ __  ___
