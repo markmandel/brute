@@ -25,7 +25,7 @@
                                              :target :nodejs}}}}
   :aliases {"alltest"  ["do" "clean" ["test"] ["doo" "node" "test" "once"] "clean"]
             "cljstest" ["doo" "node" "test"]}
-  :profiles {:dev {:dependencies [[org.clojure/tools.namespace "0.2.10"]]
+  :profiles {:dev {:dependencies [[org.clojure/tools.namespace "0.2.11"]]
                    :source-paths ["dev"]
                    :repl-options {:init-ns user}
                    :codox        {:source-paths ["src"] :namespaces [brute.system brute.entity]}}})
