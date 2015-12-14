@@ -9,8 +9,9 @@
    ;; Map of Entities -> Set of Component Types
    :entity-component-types {}})
 
-(defn create-uuid []
+(defn create-uuid
   "create a UUID"
+  []
   #?(:clj  (java.util.UUID/randomUUID)
      :cljs (let [template "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx"
                  f #(let [r (Math/floor (* (rand) 16))

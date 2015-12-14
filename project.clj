@@ -28,4 +28,4 @@
   :profiles {:dev {:dependencies [[org.clojure/tools.namespace "0.2.10"]]
                    :source-paths ["dev"]
                    :repl-options {:init-ns user}
-                   :codox        {:output-dir "doc/codox"}}})
+                   :codox        {:source-paths ["src"] :namespaces [brute.system brute.entity]}}})
