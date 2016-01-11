@@ -5,7 +5,7 @@
 FROM java:jdk
 
 RUN apt-get update && \
-    apt-get install -y zsh openssh-server libapparmor1 git
+    apt-get install -y zsh openssh-server libapparmor1 git gnupg
 
 #sshd setup - https://docs.docker.com/examples/running_ssh_service/
 RUN mkdir /var/run/sshd

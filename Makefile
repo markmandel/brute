@@ -34,6 +34,7 @@ clean:
 
 # Start a development shell
 shell: m2
+		mkdir -p ~/.gnupg
 		docker run --rm \
 				--name=$(NAME) \
 				-P=true \
@@ -42,6 +43,7 @@ shell: m2
 				-e HOST_USER=$(USER) \
 				-e DOCKER_GID=$(word 3,$(subst :, ,$(shell getent group docker))) \
 				-v ~/.m2:/home/$(USER)/.m2 \
+				-v ~/.gnupg:/home/$(USER)/.gnupg \
 				-v $(current_path)/dev/profiles.clj:/home/$(USER)/.lein/profiles.clj \
 				-v $(current_path)/dev/zshrc:/home/$(USER)/.zshrc \
 				-v $(current_path):/project \
