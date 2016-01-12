@@ -2,7 +2,7 @@
 
 A simple and lightweight Entity Component System library for writing games with Clojure or ClojureScript.
 
-![Clojars Version](https://clojars.org/brute/latest-version.svg?v=2)
+![Clojars Version](https://clojars.org/brute/latest-version.svg?v=3)
 
 [![wercker status](https://app.wercker.com/status/5f5d692036ee110c41a50ccc7b6f4ae5/m "wercker status")](https://app.wercker.com/project/bykey/5f5d692036ee110c41a50ccc7b6f4ae5)
 
@@ -140,32 +140,21 @@ Pull requests are always welcome!
 
 Active development happens on the `develop` branch. The `master` branch is the source for the current release.
 
-### CLJX
-This project uses [CLJX](https://github.com/lynaghk/cljx) to cross compile to Clojure and ClojureScript.  For that reason, you will want to run `lein cljx` before starting up a REPL, otherwise the REPL won't be able to find the user.clj dependencies.
+### Reader Conditionals
+This project uses [Reader Conditionals](http://clojure.org/reader#The%20Reader--Reader%20Conditionals) to support both Clojure and ClojureScript. It should be a seamless experience.
 
-If you want to use [Midje autotest](https://github.com/marick/Midje/wiki/Autotest), you will want to run `lein cljx auto` to automatically generate the Clojure files so that Midje can see the changes.
+## Testing
 
-### ClojureScript
+To test under Clojure: `lein test`
 
-To run the tests under ClojureScript you will need the following Node pages installed:
+To test under ClojureScript: `lein cljstest`
 
-```bash
-npm install -g karma karma-cli karma-jasmine jasmine-node
-```
+To run all tests: `lein alltest`
 
-To run the CLJS tests in isolation you can run:
+### Run all tests in the a Docker Container
+You should be able to run all the tests without having to install anything, except to pull the Docker container.
 
-```bash
-lein cljsbuild test karma
-```
-
-### Clean Test
-
-To do a clean end to end test of both the Clojure and ClojureScript code:
-
-```bash
-lein cleantest
-```
+`make test` will run all the tests in the development Docker container, which should make development easier.
 
 ## License
 
