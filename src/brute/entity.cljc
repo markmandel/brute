@@ -13,11 +13,7 @@
   "create a UUID"
   []
   #?(:clj  (java.util.UUID/randomUUID)
-     :cljs (let [template "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx"
-                 f #(let [r (Math/floor (* (rand) 16))
-                          v (if (= % \x) r (bit-or (bit-and r 0x3) 0x8))]
-                     (.toString v 16))]
-             (.replace template (js/RegExp. "[xy]" "g") f))))
+     :cljs (random-uuid)))
 
 (defn create-entity
   "Create the entity and return it. Entities are just UUIDs"

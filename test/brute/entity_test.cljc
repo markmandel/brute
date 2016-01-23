@@ -41,10 +41,10 @@
 (deftest entity-unique-uuid
   (let [uuid (create-entity)]
     (is uuid)
-    #?(:clj  (do (is (> (-> uuid .toString .length) 0))
+    #?(:clj  (do (is (= (-> uuid .toString .length) 36))
                  (is (= (class uuid) UUID)))
-       :cljs (do (is (> (.-length uuid) 0))
-                 (is (= (type uuid) (type "")))))
+       :cljs (do (is (= (-> uuid .toString .-length) 36))
+                 (is (= (type uuid) UUID))))
     (is (not= (create-entity) uuid))))
 
 ;; Creating and adding an entity results in it being added to the global list
